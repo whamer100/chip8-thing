@@ -4,6 +4,7 @@
 #include "string.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <malloc.h>
 
 // typedef const char* string;
 typedef char* string;
@@ -28,12 +29,13 @@ int main(void)
 
     chip8_ctx ctx = { 0 };
 
-    ctx.program_path = "\0";
+    ctx.program_path = calloc(1, 32767);  // windows path limit moment
 
-    bool canvas_loaded = false;
+    Image chip8_canvas = GenImageColor(64, 32, RED);
+    Texture2D chip8_tex = LoadTextureFromImage(chip8_canvas);
 
-    Image chip8_canvas = { 0 };
-    Texture2D chip8_tex = { 0 };
+    ctx.canvas = &chip8_canvas;
+    ctx.tex = &chip8_tex;
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -44,22 +46,13 @@ int main(void)
             init_draw();
             continue;
         }
-        printf("[LOAD::CHIP8] the (%s)\n", ctx.program_path);
-        if (!canvas_loaded)
-        {
-            chip8_canvas = GenImageColor(64, 32, RED);
-            chip8_tex = LoadTextureFromImage(chip8_canvas);
-
-            ctx.canvas = &chip8_canvas;
-            ctx.tex = &chip8_tex;
-            canvas_loaded = true;
-        }
         float dt = GetFrameTime();
         update(dt, &ctx);
         draw(&ctx);
     }
 
     // De-Initialization
+    free(ctx.program_path);
     CloseWindow();        // Close window and OpenGL context
 
     return 0;
@@ -70,15 +63,22 @@ void update(float dt, chip8_ctx* ctx)
     ctx->ft += dt;
     if (ctx->ft < 1/60.f) return;
     ctx->ft -= 1/60.f;
+
+    ctx->reg.V[0]++;
+    ctx->reg.V[0] %= 64;
+
+    ImageClearBackground(ctx->canvas, RED);
+    ImageDrawPixel(ctx->canvas, ctx->reg.V[0], 0, WHITE);
 }
 
 void draw(chip8_ctx* ctx)
 {
     BeginDrawing();
     // ClearBackground(BLACK);
+    UpdateTexture(*ctx->tex, ctx->canvas->data);
 
     Vector2 pos = { 0, 0 };
-    DrawTextureEx(*ctx->tex, pos, 0, 10, BLANK);
+    DrawTextureEx(*ctx->tex, pos, 0, 10, WHITE);
 
     EndDrawing();
 }
