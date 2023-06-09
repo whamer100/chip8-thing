@@ -40,6 +40,8 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+        // i wish there was a cleaner way to do this
+        // and i will not be using a switch statement or anything
         if (!ctx.program_loaded)
         {
             init_update(&ctx);
@@ -60,15 +62,22 @@ int main(void)
 
 void update(float dt, chip8_ctx* ctx)
 {
+    // i hate numbers
     ctx->ft += dt;
     if (ctx->ft < 1/60.f) return;
     ctx->ft -= 1/60.f;
 
-    ctx->reg.V[0]++;
-    ctx->reg.V[0] %= 64;
+    // TODO: CPU instructions
+    // TODO: input handling
+    // TODO: sound
+    // TODO: custom colors
+    // TODO: whatever else i need
 
-    ImageClearBackground(ctx->canvas, RED);
-    ImageDrawPixel(ctx->canvas, ctx->reg.V[0], 0, WHITE);
+    // ctx->reg.V[0]++;
+    // ctx->reg.V[0] %= 64;
+
+    // ImageClearBackground(ctx->canvas, RED);
+    // ImageDrawPixel(ctx->canvas, ctx->reg.V[0], 0, WHITE);
 }
 
 void draw(chip8_ctx* ctx)
@@ -141,6 +150,8 @@ void init_draw()
     EndDrawing();
 }
 
+// why does this cause the program to lag so hard
+// it shouldn't, but it does! why?
 void prompt_file(char* *program_path)
 {
     NFD_Init();
