@@ -25,9 +25,21 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     endif()
 endif()
 
-add_executable(${PROJECT_NAME} main.c)
+# nativefiledialog-extended
+find_package(nfd QUIET)
+if (NOT nfd_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+            nfd
+            GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended
+            GIT_TAG master
+    )
+    FetchContent_MakeAvailable(nfd)
+endif()
+
+add_executable(${PROJECT_NAME} main.c chip8.h chip8.c)
 #set(raylib_VERBOSE 1)
-target_link_libraries(${PROJECT_NAME} raylib)
+target_link_libraries(${PROJECT_NAME} raylib nfd)
 
 # Web Configurations
 if (${PLATFORM} STREQUAL "Web")
