@@ -37,7 +37,7 @@ if (NOT nfd_FOUND)
     FetchContent_MakeAvailable(nfd)
 endif()
 
-add_executable(${PROJECT_NAME} main.c chip8.h chip8.c)
+add_executable(${PROJECT_NAME} main.c chip8.h chip8.c macros.h utils.h utils.c)
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib nfd)
 
